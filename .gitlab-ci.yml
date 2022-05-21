@@ -1,0 +1,45 @@
+image: docker:19.03.15-git
+include:
+  - project: 'config/ci'
+    file: '.common-pipeline.yml'
+
+stages:
+  - linter
+  - build
+  - test
+  - publish
+  - deploy
+  - switch
+  - jira create
+  - deploy prod
+  - grafana annotate
+  - clean
+  - jira close
+
+.linter: &linter
+  stage: linter
+  image: python:latest
+  tags:
+    - k8s-docker-build
+  before_script:
+    - pip install flake8 yapf isort
+      --trusted-host nexus.ae-rus.net
+      --extra-index-url https://nexus.ae-rus.net/repository/pypi-group/simple/
+
+flake8:
+  <<: *linter
+  stage: linter
+  script:
+    - flake8 --ignore=W291
+
+isort:
+  <<: *linter
+  stage: linter
+  script:
+    - isort . -c
+
+yapf:
+  <<: *linter
+  stage: linter
+  script:
+    - yapf -dpr . --exclude .venv/

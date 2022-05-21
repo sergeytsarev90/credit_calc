@@ -1,0 +1,8 @@
+/venv
+/dist
+/build
+.pytest_cache
+/logs
+.idea/
+.DS_Store
+**/__pycache__/
